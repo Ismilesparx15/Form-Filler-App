@@ -138,6 +138,45 @@ export class FormSubmitter {
           this.page.waitForNavigation(),
           this.page.waitForLoadState('networkidle')
         ])
+
+        // Show success message
+        await this.page.evaluate(() => {
+          const dialog = document.createElement('div')
+          dialog.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #4CAF50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 10000;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            text-align: center;
+            animation: fadeIn 0.3s ease-out;
+          `
+          dialog.innerHTML = `
+            <div style="margin-bottom: 15px;"> Form Submitted Successfully!</div>
+            <div style="font-size: 14px;">This window will close in 3 seconds...</div>
+          `
+          document.body.appendChild(dialog)
+
+          // Add fade-in animation
+          const style = document.createElement('style')
+          style.textContent = `
+            @keyframes fadeIn {
+              from { opacity: 0; transform: translate(-50%, -60%); }
+              to { opacity: 1; transform: translate(-50%, -50%); }
+            }
+          `
+          document.head.appendChild(style)
+        })
+
+        // Wait 3 seconds before closing
+        await this.sleep(3000)
       } else {
         console.warn('Submit button not found')
       }
